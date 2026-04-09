@@ -1,0 +1,7 @@
+docker container run ^
+--name nest-app ^
+--workdir /app ^
+-p 80:3000 ^
+-v %cd%:/app ^
+node:18-alpine3.17 ^
+sh -c "npm install && npm run start:dev"

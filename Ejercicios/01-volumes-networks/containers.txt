@@ -1,0 +1,18 @@
+docker container run ^
+--name world-db ^
+-dp 3306:3306 ^
+--env MARIADB_USER=maxcaza ^
+--env MARIADB_PASSWORD=alpha123 ^
+--env MARIADB_ROOT_PASSWORD=beta456 ^
+--env MARIADB_DATABASE=world-db ^
+--volume world-db-vol:/var/lib/mysql ^
+--network world-db-net ^
+mariadb:jammy
+
+
+docker container run ^
+--name phpmyadmin ^
+-dp 8080:80 ^
+--env PMA_ARBITRARY=1 ^
+--network world-db-net ^
+phpmyadmin:5.2.0-apache

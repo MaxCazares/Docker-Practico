@@ -1,0 +1,26 @@
+services:
+  db:
+    container_name: postgres-db
+    image: postgres:15.1
+    volumes:
+      # - postgres-db:/var/lib/postgresql/data
+      - ./postgresql/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=123456
+
+  pgAdmin:
+    depends_on:
+      - db
+    container_name: pgAdmin
+    image: dpage/pgadmin4:6.17
+    ports:
+      - "80:80"
+    volumes:
+      - ./pgAdmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_DEFAULT_EMAIL=superman@google.com
+
+# volumes:
+#   postgres-db:
+#     external: true
