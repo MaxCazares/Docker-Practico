@@ -1,30 +1,30 @@
-FROM node:19-alpine3.15 AS dev
+FROM node:18.13-alpine3.17 AS dev
 WORKDIR /app
 COPY package.json ./
-RUN yarn install
-CMD [ "yarn","start:dev" ]
+RUN npm install
+CMD [ "npm","start:dev" ]
 
 
-FROM node:19-alpine3.15 AS dev-deps
+FROM node:18.13-alpine3.17 AS dev-deps
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json ./
+RUN npm install 
 
 
-FROM node:19-alpine3.15 AS builder
+FROM node:18.13-alpine3.17 AS builder
 WORKDIR /app
 COPY --from=dev-deps /app/node_modules ./node_modules
 COPY . .
-# RUN yarn test
-RUN yarn build
+# RUN npm test
+RUN npm run build
 
-FROM node:19-alpine3.15 AS prod-deps
+FROM node:18.13-alpine3.17 AS prod-deps
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --prod --frozen-lockfile
+COPY package.json ./
+RUN npm install --prod 
 
 
-FROM node:19-alpine3.15 AS prod
+FROM node:18.13-alpine3.17 AS prod
 EXPOSE 3000
 WORKDIR /app
 ARG APP_VERSION
