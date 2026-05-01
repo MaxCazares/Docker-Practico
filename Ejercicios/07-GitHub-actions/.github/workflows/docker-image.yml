@@ -1,0 +1,46 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Git Semantic Version
+      uses: PaulHatch/semantic-version@v4.0.3
+      with:
+        major_pattern: "major: "
+        minor_pattern: "feat: "
+        format: "${major}.${minor}.${increment}"
+      id: version
+
+    - name: Docker login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_HUB_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Build docker image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker build -t m4xo/docker-graphql:$NEW_VERSION .
+        docker build -t m4xo/docker-graphql:latest .
+    
+    - name: Push docker image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push m4xo/docker-graphql:$NEW_VERSION
+        docker push m4xo/docker-graphql:latest
